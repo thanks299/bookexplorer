@@ -2,7 +2,6 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
-import { usePathname } from "next/navigation"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { ThemeProvider } from "@/components/theme-provider"
@@ -25,10 +24,11 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const pathname = usePathname()
-  const noLayoutRoutes = ["/signin", "/signup"] // Add any other routes where you don't want the layout
+  const noLayoutRoutes = ["/signin", "/signup"]
 
-  const showLayout = !noLayoutRoutes.includes(pathname)
+  // Check if we're on the server and get the current URL
+  const isSigninOrSignupPage =
+    typeof window !== "undefined" && noLayoutRoutes.includes(window.location.pathname)
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -38,11 +38,11 @@ export default function RootLayout({
             <AuthProvider>
               <FavoritesProvider>
                 <div className="flex min-h-screen flex-col">
-                  {showLayout && <Header />}
+                  {!isSigninOrSignupPage && <Header />}
                   <div className="flex-1">
                     <PageTransition>{children}</PageTransition>
                   </div>
-                  {showLayout && <Footer />}
+                  {!isSigninOrSignupPage && <Footer />}
                 </div>
                 <Toaster />
                 <BouncingCursor />
