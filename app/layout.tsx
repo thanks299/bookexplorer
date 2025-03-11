@@ -2,6 +2,7 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
+import { usePathname } from "next/navigation"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { ThemeProvider } from "@/components/theme-provider"
@@ -24,6 +25,11 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const pathname = usePathname()
+  const noLayoutRoutes = ["/signin", "/signup"] // Add any other routes where you don't want the layout
+
+  const showLayout = !noLayoutRoutes.includes(pathname)
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
@@ -32,11 +38,11 @@ export default function RootLayout({
             <AuthProvider>
               <FavoritesProvider>
                 <div className="flex min-h-screen flex-col">
-                  <Header />
+                  {showLayout && <Header />}
                   <div className="flex-1">
                     <PageTransition>{children}</PageTransition>
                   </div>
-                  <Footer />
+                  {showLayout && <Footer />}
                 </div>
                 <Toaster />
                 <BouncingCursor />
@@ -48,4 +54,3 @@ export default function RootLayout({
     </html>
   )
 }
-
